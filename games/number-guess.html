@@ -3,16 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Number Guessing Game | Matt Draugelis</title>
+  <title>Number Guessing Game</title>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 40px; line-height: 1.5; }
     nav a { margin-right: 12px; }
-    .box { max-width: 520px; border: 1px solid #ddd; border-radius: 12px; padding: 18px; margin-top: 16px; }
-    label { display:block; margin-top: 10px; }
-    input { padding: 10px; width: 180px; border-radius: 10px; border: 1px solid #aaa; }
-    button { padding: 10px 14px; border-radius: 10px; border: 1px solid #111; background: #fff; cursor: pointer; margin-right: 8px; }
-    .msg { margin-top: 12px; font-weight: 600; }
-    .muted { color: #666; font-weight: 400; }
+    .box { max-width: 520px; border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-top: 16px; }
+    input { padding: 10px; width: 160px; border-radius: 10px; border: 1px solid #aaa; }
+    button { padding: 10px 14px; border-radius: 10px; border: 1px solid #111; background: #fff; cursor: pointer; margin-left: 8px; }
+    #msg { margin-top: 12px; font-weight: 600; white-space: pre-line; }
   </style>
 </head>
 <body>
@@ -23,80 +21,106 @@
     <a href="../game.html">Games</a>
   </nav>
 
-  <h1>Matt's Number Guessing Game</h1>
-  <p class="muted">I'm thinking of a number between <strong>1</strong> and <strong>30</strong>.</p>
-
   <div class="box">
-    <div><strong>Attempts:</strong> <span id="attempts">0</span></div>
+    <div id="header"></div>
 
-    <label for="guessInput">Guess a number:</label>
-    <input id="guessInput" type="number" min="1" max="30" placeholder="1–30" />
     <div style="margin-top: 12px;">
-      <button id="submitBtn">Submit</button>
-      <button id="newGameBtn" type="button">New Game</button>
+      <input id="guessInput" type="text" placeholder="Guess a number" />
+      <button id="guessBtn">Guess</button>
     </div>
 
-    <div class="msg" id="message"></div>
+    <div id="msg"></div>
+
+    <div id="playAgainArea" style="margin-top: 12px; display: none;">
+      <span>Do you want to play again? (y/n)</span>
+      <button id="yesBtn">y</button>
+      <button id="noBtn">n</button>
+    </div>
   </div>
 
   <script>
-    let secretNumber = 0;
-    let attempts = 0;
-    let gameOver = false;
+    // Very close to your Python version, just adapted to a browser UI.
+    let secretNumber;
+    let attempts;
+    let finished;
 
-    function newGame() {
+    const headerEl = document.getElementById("header");
+    const msgEl = document.getElementById("msg");
+    const inputEl = document.getElementById("guessInput");
+    const guessBtn = document.getElementById("guessBtn");
+    const playAgainArea = document.getElementById("playAgainArea");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+
+    function startGame() {
       secretNumber = Math.floor(Math.random() * 30) + 1; // 1..30
       attempts = 0;
-      gameOver = false;
-      document.getElementById("attempts").textContent = String(attempts);
-      document.getElementById("message").textContent = "";
-      const input = document.getElementById("guessInput");
-      input.value = "";
-      input.focus();
+      finished = false;
+
+      headerEl.textContent = "";
+      msgEl.textContent = "";
+      playAgainArea.style.display = "none";
+
+      headerEl.textContent =
+        "Welcome to Matt's Number Guessing Game\nI'm thinking of a number between 1 and 30";
+
+      inputEl.value = "";
+      inputEl.disabled = false;
+      guessBtn.disabled = false;
+      inputEl.focus();
     }
 
-    function submitGuess() {
-      if (gameOver) return;
+    function handleGuess() {
+      if (finished) return;
 
-      const input = document.getElementById("guessInput");
-      const raw = input.value;
-
-      // Basic validation
+      const raw = inputEl.value.trim();
       const guess = Number(raw);
+
+      // Match your Python behavior: try/except for invalid number
       if (!Number.isInteger(guess)) {
-        document.getElementById("message").textContent = "That is not a valid number.";
+        msgEl.textContent = "That is not a valid number";
         return;
       }
+
+      // Out of range check
       if (guess < 1 || guess > 30) {
-        document.getElementById("message").textContent = "That number is out of range (1–30).";
+        msgEl.textContent = "That number is out of range";
         return;
       }
 
       attempts += 1;
-      document.getElementById("attempts").textContent = String(attempts);
 
       if (guess < secretNumber) {
-        document.getElementById("message").textContent = "Too low.";
+        msgEl.textContent = "Too low";
       } else if (guess > secretNumber) {
-        document.getElementById("message").textContent = "Too high.";
+        msgEl.textContent = "Too high";
       } else {
-        document.getElementById("message").textContent =
-          `You guessed it in ${attempts} attempt${attempts === 1 ? "" : "s"}! 🎉`;
-        gameOver = true;
+        msgEl.textContent = `You guessed it in ${attempts} attempts`;
+        finished = true;
+
+        inputEl.disabled = true;
+        guessBtn.disabled = true;
+        playAgainArea.style.display = "block";
       }
 
-      input.value = "";
-      input.focus();
+      inputEl.value = "";
+      inputEl.focus();
     }
 
-    document.getElementById("submitBtn").addEventListener("click", submitGuess);
-    document.getElementById("newGameBtn").addEventListener("click", newGame);
-    document.getElementById("guessInput").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") submitGuess();
+    guessBtn.addEventListener("click", handleGuess);
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleGuess();
     });
 
-    // Start first game
-    newGame();
+    yesBtn.addEventListener("click", startGame);
+    noBtn.addEventListener("click", () => {
+      msgEl.textContent = "Thanks for playing";
+      playAgainArea.style.display = "none";
+    });
+
+    // Start on load
+    startGame();
   </script>
 </body>
 </html>
+
