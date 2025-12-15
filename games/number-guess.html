@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Number Guessing Game | Matt Draugelis</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 40px; line-height: 1.5; }
+    nav a { margin-right: 12px; }
+    .box { max-width: 520px; border: 1px solid #ddd; border-radius: 12px; padding: 18px; margin-top: 16px; }
+    label { display:block; margin-top: 10px; }
+    input { padding: 10px; width: 180px; border-radius: 10px; border: 1px solid #aaa; }
+    button { padding: 10px 14px; border-radius: 10px; border: 1px solid #111; background: #fff; cursor: pointer; margin-right: 8px; }
+    .msg { margin-top: 12px; font-weight: 600; }
+    .muted { color: #666; font-weight: 400; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../projects.html">Projects</a>
+    <a href="../resume.html">Resume</a>
+    <a href="../game.html">Games</a>
+  </nav>
+
+  <h1>Matt's Number Guessing Game</h1>
+  <p class="muted">I'm thinking of a number between <strong>1</strong> and <strong>30</strong>.</p>
+
+  <div class="box">
+    <div><strong>Attempts:</strong> <span id="attempts">0</span></div>
+
+    <label for="guessInput">Guess a number:</label>
+    <input id="guessInput" type="number" min="1" max="30" placeholder="1–30" />
+    <div style="margin-top: 12px;">
+      <button id="submitBtn">Submit</button>
+      <button id="newGameBtn" type="button">New Game</button>
+    </div>
+
+    <div class="msg" id="message"></div>
+  </div>
+
+  <script>
+    let secretNumber = 0;
+    let attempts = 0;
+    let gameOver = false;
+
+    function newGame() {
+      secretNumber = Math.floor(Math.random() * 30) + 1; // 1..30
+      attempts = 0;
+      gameOver = false;
+      document.getElementById("attempts").textContent = String(attempts);
+      document.getElementById("message").textContent = "";
+      const input = document.getElementById("guessInput");
+      input.value = "";
+      input.focus();
+    }
+
+    function submitGuess() {
+      if (gameOver) return;
+
+      const input = document.getElementById("guessInput");
+      const raw = input.value;
+
+      // Basic validation
+      const guess = Number(raw);
+      if (!Number.isInteger(guess)) {
+        document.getElementById("message").textContent = "That is not a valid number.";
+        return;
+      }
+      if (guess < 1 || guess > 30) {
+        document.getElementById("message").textContent = "That number is out of range (1–30).";
+        return;
+      }
+
+      attempts += 1;
+      document.getElementById("attempts").textContent = String(attempts);
+
+      if (guess < secretNumber) {
+        document.getElementById("message").textContent = "Too low.";
+      } else if (guess > secretNumber) {
+        document.getElementById("message").textContent = "Too high.";
+      } else {
+        document.getElementById("message").textContent =
+          `You guessed it in ${attempts} attempt${attempts === 1 ? "" : "s"}! 🎉`;
+        gameOver = true;
+      }
+
+      input.value = "";
+      input.focus();
+    }
+
+    document.getElementById("submitBtn").addEventListener("click", submitGuess);
+    document.getElementById("newGameBtn").addEventListener("click", newGame);
+    document.getElementById("guessInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submitGuess();
+    });
+
+    // Start first game
+    newGame();
+  </script>
+</body>
+</html>
