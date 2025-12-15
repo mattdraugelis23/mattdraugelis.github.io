@@ -1,12 +1,33 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Game | Matt Draugelis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Games | Matt Draugelis</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 40px; line-height: 1.5; }
+    nav a { margin-right: 12px; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin: 16px 0; }
+    .btn { display: inline-block; padding: 10px 14px; border: 1px solid #111; border-radius: 10px; text-decoration: none; }
+  </style>
 </head>
 <body>
-  <h1>Game</h1>
-  <p><a href="index.html">Home</a></p>
-  <p>Game demo coming soon.</p>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="projects.html">Projects</a>
+    <a href="resume.html">Resume</a>
+    <strong>Games</strong>
+  </nav>
+
+  <h1>Games</h1>
+  <p>Small interactive projects (browser-based).</p>
+
+  <div class="card">
+    <h2>Number Guessing Game</h2>
+    <p>Guess the secret number between 1 and 30. Tracks attempts and supports replay.</p>
+    <a class="btn" href="games/number-guess.html">Play</a>
+  </div>
+
+  <!-- Add more games later by copying the card block -->
 </body>
 </html>
